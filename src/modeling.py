@@ -47,10 +47,11 @@ def train(csv_path: Path, artifact_dir: Path) -> dict[str, float | int]:
     importance = permutation_importance(model, test_df[FEATURES].sample(min(2500, len(test_df)), random_state=42), test_df["rul"].sample(min(2500, len(test_df)), random_state=42), n_repeats=3, random_state=42)
     importance_df = pd.DataFrame({"feature": FEATURES, "importance": importance.importances_mean}).sort_values("importance", ascending=False)
     reference = train_df[FEATURES].agg(["mean", "std", "min", "max"]).T.reset_index(names="feature")
+    reference_sample = train_df[FEATURES].sample(min(3000, len(train_df)), random_state=42)
     artifact_dir.mkdir(parents=True, exist_ok=True)
     joblib.dump({"model": model, "features": FEATURES}, artifact_dir / "model.joblib")
     (artifact_dir / "metrics.json").write_text(json.dumps(metrics, indent=2), encoding="utf-8")
     importance_df.to_csv(artifact_dir / "feature_importance.csv", index=False)
     reference.to_csv(artifact_dir / "reference_stats.csv", index=False)
+    reference_sample.to_csv(artifact_dir / "reference_sample.csv", index=False)
     return metrics
-

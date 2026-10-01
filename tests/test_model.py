@@ -3,6 +3,7 @@ from pathlib import Path
 import pandas as pd
 from src.data import add_target, generate_demo
 from src.modeling import train
+from src.modeling import population_stability_index
 
 
 def test_engine_split_and_artifacts(tmp_path: Path):
@@ -13,4 +14,5 @@ def test_engine_split_and_artifacts(tmp_path: Path):
     assert (tmp_path / "artifacts" / "model.joblib").exists()
     targeted = add_target(pd.read_csv(data))
     assert targeted.groupby("engine_id")["rul"].min().eq(0).all()
-
+    values = targeted["sensor_1"].to_numpy()
+    assert population_stability_index(values, values) == 0.0

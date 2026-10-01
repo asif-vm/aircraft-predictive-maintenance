@@ -15,6 +15,7 @@ It demonstrates leakage-safe group splitting, regression evaluation in operation
 - Free [NASA PCoE C-MAPSS turbofan run-to-failure dataset](https://www.nasa.gov/intelligent-systems-division/discovery-and-systems-health/pcoe/pcoe-data-set-repository/) (FD001)
 - pandas, scikit-learn and permutation importance
 - FastAPI, Streamlit, Docker, pytest and GitHub Actions
+- Optional local MLflow tracking and PSI-based feature-drift reports
 - Deterministic C-MAPSS-shaped demo data for immediate offline execution
 
 ## Run
@@ -29,6 +30,15 @@ uvicorn api:app --reload
 streamlit run app.py
 ```
 
+For experiment tracking and drift monitoring:
+
+```bash
+pip install -r requirements-mlops.txt
+python train.py --real --mlflow
+python monitor.py data/train_FD001.csv
+mlflow ui --backend-store-uri sqlite:///mlflow.db
+```
+
 Run `python train.py --real` to download and train on NASA FD001. Engines—not random rows—are separated between train and test to prevent leakage.
 
 ## Architecture
@@ -37,7 +47,7 @@ Run `python train.py --real` to download and train on NASA FD001. Engines—not 
 2. Calculate capped RUL from each engine's final observed cycle.
 3. Split by engine ID so one engine never appears in both train and test.
 4. Train and evaluate RUL in cycles plus recall inside the 30-cycle critical window.
-5. Save the model, metrics, feature importance and reference statistics; serve predictions through FastAPI.
+5. Save the model, metrics, feature importance and reference sample; log optional MLflow runs and monitor PSI drift before FastAPI serving.
 
 ## Verified FD001 result
 
@@ -49,7 +59,7 @@ Run `python train.py --real` to download and train on NASA FD001. Engines—not 
 
 - Trained a remaining-useful-life model on **100 NASA turbofan engines** using engine-level holdout validation, achieving **13.13-cycle MAE** across 20 unseen engines without cross-engine leakage.
 - Designed maintenance-risk evaluation around a **30-cycle critical window**, attaining **80% critical recall** and translating predictions into actionable priority levels.
-- Productionized inference through FastAPI and Docker with automated model tests, explainability artifacts and reference statistics for drift monitoring.
+- Productionized inference through FastAPI and Docker with automated model tests, MLflow experiment tracking, explainability artifacts and PSI-based drift monitoring.
 
 ## Interview questions
 
