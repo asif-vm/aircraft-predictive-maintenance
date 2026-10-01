@@ -1,0 +1,5 @@
+__pycache__/
+.pytest_cache/
+.venv/
+data/train_FD001.csv
+
