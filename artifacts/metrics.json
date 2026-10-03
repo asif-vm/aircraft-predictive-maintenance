@@ -1,7 +1,7 @@
 {
   "train_engines": 80,
   "test_engines": 20,
-  "mae_cycles": 13.1251,
-  "rmse_cycles": 18.7538,
-  "critical_recall": 0.8
+  "mae_cycles": 13.1437,
+  "rmse_cycles": 18.761,
+  "critical_recall": 0.8048
 }
